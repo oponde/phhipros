@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Validation Blueprints ---
+    function isValidSiteContent(data) {
+      return data.keys().hasAll(['hero', 'sections', 'footer', 'updatedAt', 'updatedBy'])
+        && data.keys().size() == 5
+        && data.hero is map
+        && data.hero.title is string && data.hero.title.size() <= 200
+        && data.hero.subtitle is string && data.hero.subtitle.size() <= 1000
+        && data.hero.ctaText is string && data.hero.ctaText.size() <= 50
+        && data.hero.imageUrl is string && data.hero.imageUrl.size() <= 1000
+        && data.sections is list
+        && data.footer is map
+        && data.footer.about is string && data.footer.about.size() <= 1000
+        && data.footer.links is list
+        && data.updatedAt == request.time
+        && data.updatedBy == request.auth.uid;
+    }
+
+    // --- Collections ---
+
+    match /site/{docId} {
+      allow read: if true; // Publicly readable site content
+      allow create, update: if (
+        isSignedIn() 
+        && isEmailVerified()
+        && isValidId(docId)
+        && isValidSiteContent(incoming())
+        && (docId == 'content')
+      );
+      allow delete: if false;
+    }
+  }
+}

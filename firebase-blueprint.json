@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "SiteContent": {
+      "title": "Site Content",
+      "description": "The complete content for the PHHIPROS website.",
+      "type": "object",
+      "properties": {
+        "hero": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string", "maxLength": 200 },
+            "subtitle": { "type": "string", "maxLength": 1000 },
+            "ctaText": { "type": "string", "maxLength": 50 },
+            "imageUrl": { "type": "string", "maxLength": 1000 }
+          },
+          "required": ["title", "subtitle", "ctaText", "imageUrl"]
+        },
+        "sections": {
+          "type": "array",
+          "description": "List of sections on the home page."
+        },
+        "footer": {
+          "type": "object",
+          "properties": {
+            "about": { "type": "string", "maxLength": 1000 },
+            "links": { "type": "array" }
+          },
+          "required": ["about", "links"]
+        },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["hero", "sections", "footer", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/site/content": {
+      "schema": "SiteContent",
+      "description": "The main site configuration and content."
+    }
+  }
+}

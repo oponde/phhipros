@@ -1,0 +1,6 @@
+{
+  "name": "PHHIPROS",
+  "description": "Paul Herbert Higher Institute of Professional Studies (PHHIPROS) - A professional higher education portal with built-in content management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
